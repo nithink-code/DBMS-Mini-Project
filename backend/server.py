@@ -22,7 +22,8 @@ ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
 
 # MongoDB connection
-mongo_url = os.environ['MONGO_URL']
+# Use MONGO_ATLAS_URL if available, otherwise fall back to local MONGO_URL
+mongo_url = os.environ.get('MONGO_ATLAS_URL') or os.environ.get('MONGO_URL', 'mongodb://localhost:27017')
 client = AsyncIOMotorClient(mongo_url)
 db = client[os.environ.get('DB_NAME', 'podcast_network')]
 
