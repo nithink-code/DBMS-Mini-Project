@@ -1,0 +1,38 @@
+services:
+  # Backend Web Service (FastAPI)
+  - type: web
+    name: podcast-backend
+    runtime: python
+    plan: free
+    buildCommand: pip install -r backend/requirements.txt
+    startCommand: cd backend && uvicorn server:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: DB_NAME
+        value: podcast_network
+      - key: MONGO_ATLAS_URL
+        sync: false # User should provide their MongoDB Atlas URL in the Render Dashboard
+      - key: SECRET_KEY
+        generateValue: true
+      - key: CORS_ORIGINS
+        value: "*"
+      - key: FRONTEND_URL
+        fromService:
+          name: podcast-frontend
+          type: static
+
+  # Frontend Static Site (React)
+  - type: static
+    name: podcast-frontend
+    runtime: node
+    plan: free
+    buildCommand: cd frontend && npm install && npm run build
+    staticPublishPath: frontend/build
+    envVars:
+      - key: REACT_APP_BACKEND_URL
+        fromService:
+          name: podcast-backend
+          type: web
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
