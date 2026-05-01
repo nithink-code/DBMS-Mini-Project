@@ -18,12 +18,11 @@ services:
       - key: FRONTEND_URL
         fromService:
           name: podcast-frontend
-          type: static
+          type: static_site
 
   # Frontend Static Site (React)
-  - type: static
+  - type: static_site
     name: podcast-frontend
-    runtime: node
     plan: free
     buildCommand: cd frontend && npm install && npm run build
     staticPublishPath: frontend/build
